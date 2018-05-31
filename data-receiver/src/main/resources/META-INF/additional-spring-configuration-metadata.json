@@ -1,0 +1,34 @@
+{
+  "properties": [
+    {
+      "name": "canal.destination",
+      "type": "java.lang.String",
+      "description": "canal server destination connect to."
+    },
+    {
+      "name": "canal.server.username",
+      "type": "java.lang.String",
+      "description": "Description for canal.server.username."
+    },
+    {
+      "name": "canal.server.hosts",
+      "type": "java.lang.String",
+      "description": "Description for canal.server.hosts."
+    },
+    {
+      "name": "canal.server.password",
+      "type": "java.lang.String",
+      "description": "Description for canal.server.password."
+    },
+    {
+      "name": "canal.server.zkServers",
+      "type": "java.lang.String",
+      "description": "Description for canal.server.zkServers."
+    },
+    {
+      "name": "canal.client.queueInitSize",
+      "type": "java.lang.String",
+      "description": "Description for canal.client.queueInitSize."
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "properties": [
+    {
+      "name": "app.kudu.master",
+      "type": "java.lang.String",
+      "description": "the master of kudu cluster."
+    },
+    {
+      "name": "app.buffer.init-size",
+      "type": "java.lang.String",
+      "description": "Description for app.buffer.init-size."
+    },
+    {
+      "name": "app.kudu.table-mappings.daqWeb.t_order",
+      "type": "java.lang.String",
+      "description": "Description for app.kudu.table-mappings.daqWeb.t_order."
+    },
+    {
+      "name": "app.kudu.table-mappings.gemini.t1",
+      "type": "java.lang.String",
+      "description": "Description for app.kudu.table-mappings.gemini.t1."
+    },
+    {
+      "name": "app.kudu.queue-size",
+      "type": "java.lang.String",
+      "description": "Description for app.kudu.queue-size."
+    }
+  ]
+}

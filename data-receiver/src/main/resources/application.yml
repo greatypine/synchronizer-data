@@ -1,0 +1,48 @@
+spring:
+  profiles:
+    active: dev
+---
+canal:
+  destination: example1
+  server:
+    zkServers: 10.16.31.218:2181,10.16.31.218:2182,10.16.31.218:2183
+    hosts: 10.16.31.244:11111,10.16.31.244:11112
+    username: canal
+    password: canal
+  client:
+    queueInitSize: 3
+spring:
+  kafka:
+    producer:
+      bootstrap-servers: 10.16.31.179:9092,10.16.31.180:9092,10.16.31.227:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      batch-size: 4096
+      buffer-memory: 40960
+      retries: 3
+  profiles: dev
+logging:
+  level:
+    com.guoanshequ.synchronizer.data: debug
+---
+canal:
+  destination: instance-a01
+  server:
+    hosts: 10.30.0.14:11111
+    username: canal
+    password: canal
+  client:
+    queueInitSize: 3
+spring:
+  kafka:
+    producer:
+      bootstrap-servers: 10.30.0.12:9092,10.30.0.13:9092,10.30.0.14:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      batch-size: 4096
+      buffer-memory: 40960
+      retries: 3
+  profiles: pro
+logging:
+  level:
+    com.guoanshequ.synchronizer.data: info
