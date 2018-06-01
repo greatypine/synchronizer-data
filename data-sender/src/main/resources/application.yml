@@ -25,6 +25,7 @@ app:
 logging:
   level:
     com.guoanshequ.synchronizer.data: debug
+  file: data-sender.log
 ---
 spring:
   kafka:
@@ -48,3 +49,4 @@ app:
 logging:
   level:
     com.guoanshequ.synchronizer.data: info
+  file: data-sender.log
