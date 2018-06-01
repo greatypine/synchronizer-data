@@ -49,4 +49,4 @@ app:
 logging:
   level:
     com.guoanshequ.synchronizer.data: info
-  file: data-sender.log
+  file: /tomcat/logs/data-sender.log

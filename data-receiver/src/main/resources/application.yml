@@ -47,4 +47,4 @@ spring:
 logging:
   level:
     com.guoanshequ.synchronizer.data: info
-  file: data-receiver.log
+  file: /tomcat/logs/data-receiver.log
