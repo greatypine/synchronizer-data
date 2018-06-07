@@ -11,10 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.JDBCType;
-import java.sql.Types;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +107,7 @@ public class KuduTableOperation {
                     case UNIXTIME_MICROS:
                         try {
                             Date date = DateUtils.parseDate(columnValue, new String[]{"yyyy-MM-dd HH:mm:ss"});
-                            partialRow.addLong(columnName, date.getTime() * 1000);
+                            partialRow.addLong(columnName, DateUtils.addHours(date, 8).getTime() * 1000);
                         } catch (ParseException e) {
                             logger.error("date format failed. cause: {}, message: {}.", e.getCause(), e.getMessage());
                         }
