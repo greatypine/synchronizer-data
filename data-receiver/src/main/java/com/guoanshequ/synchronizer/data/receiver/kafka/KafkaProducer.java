@@ -33,7 +33,7 @@ public class KafkaProducer implements Runnable {
             while (isRunning) {
                 CanalBean canalBean = queue.take();
                 String canalBeanJsonStr = JSON.toJSONString(canalBean);
-                logger.info("message context: {}", canalBeanJsonStr);
+                logger.debug("message context: {}", canalBeanJsonStr);
                 kafkaTemplate.send(canalBean.getDatabase(), canalBeanJsonStr);
             }
         } catch (InterruptedException e) {

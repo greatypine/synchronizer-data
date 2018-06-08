@@ -32,7 +32,7 @@ public class KafkaConsumer {
     @KafkaListener(topics = "#{kafkaConfig.getTopics()}")
     public void consumer(String message) {
         CanalBean canalBean = JSON.parseObject(message, new TypeReference<CanalBean>(){});
-        logger.info("{} topic message : {}", canalBean.getDatabase(), message);
+        logger.debug("{} topic message : {}", canalBean.getDatabase(), message);
 
         String kuduTableName = kuduConfig.getTableMappings().get(StringUtils.join(new String[]{canalBean.getDatabase(), ".", canalBean.getTable()}));
 

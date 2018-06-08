@@ -29,6 +29,7 @@ logging:
 canal:
   destination: instance-a01
   server:
+    zkServers: 10.16.31.218:2181,10.16.31.218:2182,10.16.31.218:2183
     hosts: 10.30.0.14:11111
     username: canal
     password: canal

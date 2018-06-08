@@ -41,7 +41,9 @@ public class KuduTableOperation {
             logger.error("data operation failed. cause: {}, message: {}.", e.getCause(), e.getMessage());
         } finally {
             try {
-                kuduSession.close();
+                if (kuduSession != null) {
+                    kuduSession.close();
+                }
             } catch (KuduException e) {
                 logger.error("close kudu session failed. cause: {}, message: {}.", e.getCause(), e.getMessage());
             }
@@ -76,7 +78,7 @@ public class KuduTableOperation {
                 String columnName = columnSchema.getName();
                 String columnValue = columnEntryMap.get(columnName).getValue();
                 logger.debug("column {}'s type: {}, value : {}", columnName, JDBCType.valueOf(columnEntryMap.get(columnName).getType()).getName(), columnValue);
-                if (columnValue == null) {
+                if (StringUtils.isEmpty(columnValue)) {
                     continue;
                 }
                 switch (columnSchema.getType()) {
