@@ -6,7 +6,7 @@ canal:
   destination: example1
   server:
     zkServers: 10.16.31.218:2181,10.16.31.218:2182,10.16.31.218:2183
-    hosts: 10.16.31.244:11111,10.16.31.244:11112
+    hosts: 10.16.31.244:11111
     username: canal
     password: canal
   client:
@@ -47,4 +47,4 @@ spring:
 logging:
   level:
     com.guoanshequ.synchronizer.data: info
-  file: /tomcat/logs/data-receiver.log
+  file: data-receiver.log
