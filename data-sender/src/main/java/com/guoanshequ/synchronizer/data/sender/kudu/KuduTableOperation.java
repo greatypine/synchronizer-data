@@ -76,6 +76,9 @@ public class KuduTableOperation {
                 String columnName = columnSchema.getName();
                 String columnValue = columnEntryMap.get(columnName).getValue();
                 logger.debug("column {}'s type: {}, value : {}", columnName, JDBCType.valueOf(columnEntryMap.get(columnName).getType()).getName(), columnValue);
+                if (columnValue == null) {
+                    continue;
+                }
                 switch (columnSchema.getType()) {
                     case INT8:
                         partialRow.addByte(columnName, Byte.parseByte(columnValue));
