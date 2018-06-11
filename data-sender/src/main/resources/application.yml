@@ -43,6 +43,8 @@ app:
     master: 10.30.0.13
     table-mappings:
       gemini.t_order: gemini.t_order
+      gemini.t_order_item: gemini.t_order_item
+      gemini.t_customer: gemini.t_customer
     queue-size: 10
   buffer:
     init-size: 3
