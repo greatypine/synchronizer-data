@@ -39,7 +39,7 @@ public class KafkaConsumer {
         LinkedBlockingQueue<CanalBean> canalBeanLinkedBlockingQueue = queueConcurrentHashMap.get(kuduTableName);
         if (canalBeanLinkedBlockingQueue == null) {
             logger.debug("the queue for [{}] is not exist at consumer listener.", kuduTableName);
-            canalBeanLinkedBlockingQueue = new LinkedBlockingQueue<>();
+            canalBeanLinkedBlockingQueue = new LinkedBlockingQueue<>(kuduConfig.getQueueSize());
             queueConcurrentHashMap.put(kuduTableName, canalBeanLinkedBlockingQueue);
         } else {
             logger.debug("the queue for [{}] has been created.", kuduTableName);

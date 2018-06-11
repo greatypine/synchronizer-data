@@ -71,11 +71,15 @@ public class KuduTableOperation {
 
     private static void setColumns(KuduTable kuduTable, Operation operation, Map<String, ColumnEntry> columnEntryMap) {
 
-        if (operation!=null) {
+        if (operation != null) {
             PartialRow partialRow = operation.getRow();
-            List<ColumnSchema> columnSchemaList = kuduTable.getSchema().getColumns();
-            for (ColumnSchema columnSchema : columnSchemaList) {
-                String columnName = columnSchema.getName();
+
+            for (ColumnEntry columnEntry : columnEntryMap.values()) {
+                String columnName = columnEntry.getName();
+                ColumnSchema columnSchema = getColumnSchema(columnName, kuduTable);
+                if (operation instanceof Delete && !columnSchema.isKey()) {
+                    continue;
+                }
                 String columnValue = columnEntryMap.get(columnName).getValue();
                 logger.debug("column {}'s type: {}, value : {}", columnName, JDBCType.valueOf(columnEntryMap.get(columnName).getType()).getName(), columnValue);
                 if (StringUtils.isEmpty(columnValue)) {
@@ -101,7 +105,7 @@ public class KuduTableOperation {
                         partialRow.addString(columnName, columnValue);
                         break;
                     case BOOL:
-                        partialRow.addBoolean(columnName,  Boolean.parseBoolean(columnValue));
+                        partialRow.addBoolean(columnName, Boolean.parseBoolean(columnValue));
                         break;
                     case FLOAT:
                         partialRow.addFloat(columnName, Float.parseFloat(columnValue));
@@ -123,5 +127,18 @@ public class KuduTableOperation {
                 }
             }
         }
+    }
+
+    private static ColumnSchema getColumnSchema(String columnName, KuduTable kuduTable) {
+        List<ColumnSchema> columnSchemaList = kuduTable.getSchema().getColumns();
+        ColumnSchema columnSchema = null;
+
+        for (ColumnSchema schema : columnSchemaList) {
+            if (StringUtils.equalsIgnoreCase(columnName, schema.getName())) {
+                columnSchema = schema;
+                break;
+            }
+        }
+        return columnSchema;
     }
 }
