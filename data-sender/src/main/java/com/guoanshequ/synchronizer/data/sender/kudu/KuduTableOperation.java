@@ -22,35 +22,7 @@ public class KuduTableOperation {
 
     private static final Logger logger = LoggerFactory.getLogger(KuduTableOperation.class);
 
-    public static void syncTable(String tableName, KuduClient client, List<CanalBean> canalBeanList) {
-
-        KuduSession kuduSession = null;
-        try {
-            String impalaTable = StringUtils.join(new String[]{"impala::", tableName});
-
-            KuduTable kuduTable = client.openTable(impalaTable);
-            kuduSession = client.newSession();
-
-            for (CanalBean canalBean : canalBeanList) {
-                Operation operation = createOperation(kuduTable, canalBean);
-                if (operation != null) {
-                    kuduSession.apply(operation);
-                }
-            }
-        } catch (KuduException e) {
-            logger.error("data operation failed. cause: {}, message: {}.", e.getCause(), e.getMessage());
-        } finally {
-            try {
-                if (kuduSession != null) {
-                    kuduSession.close();
-                }
-            } catch (KuduException e) {
-                logger.error("close kudu session failed. cause: {}, message: {}.", e.getCause(), e.getMessage());
-            }
-        }
-    }
-
-    private static Operation createOperation(KuduTable kuduTable, CanalBean canalBean) {
+    public static Operation createOperation(KuduTable kuduTable, CanalBean canalBean) {
         Operation operation = null;
         Map<String, ColumnEntry> columnEntryMap = null;
         if (canalBean.getEventType() == INSERT.getNumber()) {
@@ -64,66 +36,68 @@ public class KuduTableOperation {
             columnEntryMap = canalBean.getRowData().getAfterColumns();
         }
 
-        setColumns(kuduTable, operation, columnEntryMap);
+        if (operation != null) {
+            setColumns(kuduTable, operation, columnEntryMap);
+        }
 
         return operation;
     }
 
     private static void setColumns(KuduTable kuduTable, Operation operation, Map<String, ColumnEntry> columnEntryMap) {
 
-        if (operation != null) {
-            PartialRow partialRow = operation.getRow();
+        PartialRow partialRow = operation.getRow();
 
-            for (ColumnEntry columnEntry : columnEntryMap.values()) {
-                String columnName = columnEntry.getName();
-                ColumnSchema columnSchema = getColumnSchema(columnName, kuduTable);
+        for (ColumnEntry columnEntry : columnEntryMap.values()) {
+            String columnName = columnEntry.getName();
+            ColumnSchema columnSchema = getColumnSchema(columnName, kuduTable);
+            // if there is a corresponding field
+            if (columnSchema != null) {
                 if (operation instanceof Delete && !columnSchema.isKey()) {
                     continue;
                 }
                 String columnValue = columnEntryMap.get(columnName).getValue();
                 logger.debug("column {}'s type: {}, value : {}", columnName, JDBCType.valueOf(columnEntryMap.get(columnName).getType()).getName(), columnValue);
-                if (StringUtils.isEmpty(columnValue)) {
-                    continue;
-                }
-                switch (columnSchema.getType()) {
-                    case INT8:
-                        partialRow.addByte(columnName, Byte.parseByte(columnValue));
-                        break;
-                    case INT16:
-                        partialRow.addShort(columnName, Short.parseShort(columnValue));
-                        break;
-                    case INT32:
-                        partialRow.addInt(columnName, Integer.parseInt(columnValue));
-                        break;
-                    case INT64:
-                        partialRow.addLong(columnName, Long.parseLong(columnValue));
-                        break;
-                    case BINARY:
-                        partialRow.addBinary(columnName, Bytes.fromUnsignedInt(Long.parseLong(columnValue, 2)));
-                        break;
-                    case STRING:
-                        partialRow.addString(columnName, columnValue);
-                        break;
-                    case BOOL:
-                        partialRow.addBoolean(columnName, Boolean.parseBoolean(columnValue));
-                        break;
-                    case FLOAT:
-                        partialRow.addFloat(columnName, Float.parseFloat(columnValue));
-                        break;
-                    case DOUBLE:
-                        partialRow.addDouble(columnName, Double.parseDouble(columnValue));
-                        break;
-                    case UNIXTIME_MICROS:
-                        try {
-                            Date date = DateUtils.parseDate(columnValue, new String[]{"yyyy-MM-dd HH:mm:ss"});
-                            partialRow.addLong(columnName, DateUtils.addHours(date, 8).getTime() * 1000);
-                        } catch (ParseException e) {
-                            logger.error("date format failed. cause: {}, message: {}.", e.getCause(), e.getMessage());
-                        }
-                        break;
-                    case DECIMAL:
-                        partialRow.addDecimal(columnName, BigDecimal.valueOf(Double.parseDouble(columnValue)));
-                        break;
+                if (StringUtils.isNotEmpty(columnValue)) {
+                    switch (columnSchema.getType()) {
+                        case INT8:
+                            partialRow.addByte(columnName, Byte.parseByte(columnValue));
+                            break;
+                        case INT16:
+                            partialRow.addShort(columnName, Short.parseShort(columnValue));
+                            break;
+                        case INT32:
+                            partialRow.addInt(columnName, Integer.parseInt(columnValue));
+                            break;
+                        case INT64:
+                            partialRow.addLong(columnName, Long.parseLong(columnValue));
+                            break;
+                        case BINARY:
+                            partialRow.addBinary(columnName, Bytes.fromUnsignedInt(Long.parseLong(columnValue, 2)));
+                            break;
+                        case STRING:
+                            partialRow.addString(columnName, columnValue);
+                            break;
+                        case BOOL:
+                            partialRow.addBoolean(columnName, Boolean.parseBoolean(columnValue));
+                            break;
+                        case FLOAT:
+                            partialRow.addFloat(columnName, Float.parseFloat(columnValue));
+                            break;
+                        case DOUBLE:
+                            partialRow.addDouble(columnName, Double.parseDouble(columnValue));
+                            break;
+                        case UNIXTIME_MICROS:
+                            try {
+                                Date date = DateUtils.parseDate(columnValue, new String[]{"yyyy-MM-dd HH:mm:ss"});
+                                partialRow.addLong(columnName, DateUtils.addHours(date, 8).getTime() * 1000);
+                            } catch (ParseException e) {
+                                logger.error("date format failed. cause: {}, message: {}.", e.getCause(), e.getMessage());
+                            }
+                            break;
+                        case DECIMAL:
+                            partialRow.addDecimal(columnName, BigDecimal.valueOf(Double.parseDouble(columnValue)));
+                            break;
+                    }
                 }
             }
         }
