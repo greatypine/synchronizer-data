@@ -36,19 +36,21 @@ public class KafkaConsumer {
 
         String kuduTableName = kuduConfig.getTableMappings().get(StringUtils.join(new String[]{canalBean.getDatabase(), ".", canalBean.getTable()}));
 
-        LinkedBlockingQueue<CanalBean> canalBeanLinkedBlockingQueue = queueConcurrentHashMap.get(kuduTableName);
-        if (canalBeanLinkedBlockingQueue == null) {
-            logger.debug("the queue for [{}] is not exist at consumer listener.", kuduTableName);
-            canalBeanLinkedBlockingQueue = new LinkedBlockingQueue<>(kuduConfig.getQueueSize());
-            queueConcurrentHashMap.put(kuduTableName, canalBeanLinkedBlockingQueue);
-        } else {
-            logger.debug("the queue for [{}] has been created.", kuduTableName);
-        }
+        if (kuduTableName != null) {
+            LinkedBlockingQueue<CanalBean> canalBeanLinkedBlockingQueue = queueConcurrentHashMap.get(kuduTableName);
+            if (canalBeanLinkedBlockingQueue == null) {
+                logger.debug("the queue for [{}] is not exist at consumer listener.", kuduTableName);
+                canalBeanLinkedBlockingQueue = new LinkedBlockingQueue<>(kuduConfig.getQueueSize());
+                queueConcurrentHashMap.put(kuduTableName, canalBeanLinkedBlockingQueue);
+            } else {
+                logger.debug("the queue for [{}] has been created.", kuduTableName);
+            }
 
-        try {
-            canalBeanLinkedBlockingQueue.put(canalBean);
-        } catch (InterruptedException e) {
-            logger.error("getting kafka message failed. cause: {}, message: {}", e.getCause(), e.getMessage());
+            try {
+                canalBeanLinkedBlockingQueue.put(canalBean);
+            } catch (InterruptedException e) {
+                logger.error("getting kafka message failed. cause: {}, message: {}", e.getCause(), e.getMessage());
+            }
         }
     }
 }
