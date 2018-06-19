@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-@ConfigurationProperties(prefix = "app.kudu")
+@ConfigurationProperties(prefix = "app.kudu", ignoreUnknownFields = false)
 public class KuduConfig {
 
     private String master;
@@ -15,6 +15,12 @@ public class KuduConfig {
     private Map<String, String> TableMappings;
 
     private int queueSize;
+
+    private int idleTimeout;
+
+    private int scanInterval;
+
+    private long maxWaitTime;
 
     public KuduConfig() {
         this.TableMappings = new HashMap<>();
@@ -42,5 +48,29 @@ public class KuduConfig {
 
     public void setQueueSize(int queueSize) {
         this.queueSize = queueSize;
+    }
+
+    public int getIdleTimeout() {
+        return idleTimeout;
+    }
+
+    public void setIdleTimeout(int idleTimeout) {
+        this.idleTimeout = idleTimeout;
+    }
+
+    public int getScanInterval() {
+        return scanInterval;
+    }
+
+    public void setScanInterval(int scanInterval) {
+        this.scanInterval = scanInterval;
+    }
+
+    public long getMaxWaitTime() {
+        return maxWaitTime;
+    }
+
+    public void setMaxWaitTime(long maxWaitTime) {
+        this.maxWaitTime = maxWaitTime;
     }
 }

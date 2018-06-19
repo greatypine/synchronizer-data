@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: test
+    active: dev
 ---
 spring:
   kafka:
@@ -13,16 +13,18 @@ spring:
 app:
   kafka:
     topics:
-      - gemini
+      - test
   kudu:
     master: 10.16.31.227
     table-mappings:
-      gemini.t_order: gemini.t_order
-      gemini.t_order_item: gemini.t_order_item
-      gemini.t_customer: gemini.t_customer
+      test.t1: test.t1
+      test.t2: test.t2
+      test.t3: test.t3
+      test.t4: test.t4
     queue-size: 10
-  buffer:
-    init-size: 3
+    idle-timeout: 300
+    max-wait-time: 60000
+    scan-interval: 1000
 logging:
   level:
     com.guoanshequ.synchronizer.data: debug
@@ -48,11 +50,12 @@ app:
       gemini.t_customer: gemini.t_customer
       gemini.t_employee: gemini.t_employee
     queue-size: 10
-  buffer:
-    init-size: 3
+    idle-timeout: 300
+    max-wait-time: 60000
+    scan-interval: 1000
 logging:
   level:
-    com.guoanshequ.synchronizer.data: info
+    com.guoanshequ.synchronizer.data: debug
   file: data-sender.log
 ---
 spring:
@@ -74,9 +77,10 @@ app:
       gemini.t_order_item: gemini.t_order_item
       gemini.t_customer: gemini.t_customer
       gemini.t_employee: gemini.t_employee
-    queue-size: 10
-  buffer:
-    init-size: 3
+    queue-size: 50
+    idle-timeout: 300
+    max-wait-time: 60000
+    scan-interval: 1000
 logging:
   level:
     com.guoanshequ.synchronizer.data: info

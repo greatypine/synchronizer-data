@@ -3,10 +3,10 @@ spring:
     active: dev
 ---
 canal:
-  destination: example1
+  destination: instance-dev
   server:
     zkServers: 10.16.31.218:2181,10.16.31.218:2182,10.16.31.218:2183
-    hosts: 10.16.31.244:11111
+    hosts: 10.16.31.244:11112
     username: canal
     password: canal
   client:
@@ -58,7 +58,7 @@ canal:
     username: canal
     password: canal
   client:
-    queueInitSize: 3
+    queueInitSize: 50
 spring:
   kafka:
     producer:

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -24,10 +25,33 @@ public class WorkerThread implements Runnable {
 
     private boolean isRunning = true;
 
-    public WorkerThread(KuduClient kuduClient, String tableName, LinkedBlockingQueue<CanalBean> queue) {
+    private Date lastExecuteTime;
+
+    private Long[] waitMillis;
+
+    public WorkerThread(KuduClient kuduClient, String tableName, LinkedBlockingQueue<CanalBean> queue, int idleTimeout, long maxWaitTime) {
         this.kuduClient = kuduClient;
         this.tableName = tableName;
         this.queue = queue;
+        List<Long> longList = new ArrayList<>();
+        long sum = 0;
+        long item = 1;
+        long max = idleTimeout * 1000;
+
+        while (true) {
+            item *= 2;
+            item = item > maxWaitTime ? maxWaitTime : item;
+            sum += item;
+            if (sum < max) {
+                longList.add(item);
+            } else {
+                longList.add(max - sum + item);
+                break;
+            }
+        }
+        waitMillis = new Long[longList.size()];
+        waitMillis = longList.toArray(waitMillis);
+        logger.info("synchronization thread for table [{}] was started.", tableName);
     }
 
     @Override
@@ -36,7 +60,7 @@ public class WorkerThread implements Runnable {
         try {
 
             String impalaTable = StringUtils.join(new String[]{"impala::", tableName});
-            String infoFormat = StringUtils.join(new String[]{impalaTable, " {} keys:[{}]"});
+            String infoFormat = StringUtils.join(new String[]{impalaTable, " {} keys:[{}]", " queue size:{}"});
 
             KuduTable kuduTable = kuduClient.openTable(impalaTable);
             List<ColumnSchema> columnSchemas = kuduTable.getSchema().getColumns();
@@ -48,49 +72,65 @@ public class WorkerThread implements Runnable {
             }
 
             kuduSession = kuduClient.newSession();
-
+            int n = 0;
+            int len = waitMillis.length;
             while (isRunning) {
-                CanalBean canalBean = queue.take();
-                Operation operation = KuduTableOperation.createOperation(kuduTable, canalBean);
-                if (operation != null) {
-                    kuduSession.apply(operation);
-                    Object[] infoValues = new String[2];
-                    if (operation instanceof Insert) {
-                        infoValues[0] = "INSERT";
-                    } else if (operation instanceof Delete) {
-                        infoValues[0] = "DELETE";
-                    } else if (operation instanceof Update) {
-                        infoValues[0] = "UPDATE";
+                lastExecuteTime = new Date();
+                CanalBean canalBean = queue.poll();
+                if (canalBean == null) {
+                    if (n == len) break;
+                    Thread.sleep(waitMillis[n++]);
+                } else {
+                    n = 0;
+                    Operation operation = KuduTableOperation.createOperation(kuduTable, canalBean);
+                    if (operation != null) {
+                        kuduSession.apply(operation);
+                        Object[] infoValues = new String[3];
+                        if (operation instanceof Insert) {
+                            infoValues[0] = "INSERT";
+                        } else if (operation instanceof Delete) {
+                            infoValues[0] = "DELETE";
+                        } else if (operation instanceof Update) {
+                            infoValues[0] = "UPDATE";
+                        }
+                        List<String> keyValues = new ArrayList<>();
+                        for (String key : keyColumns) {
+                            keyValues.add(StringUtils.join(new String[]{key, "=", operation.getRow().getString(key)}));
+                        }
+                        infoValues[1] = StringUtils.join(keyValues.toArray(), ",");
+                        infoValues[2] = StringUtils.join(new Object[]{queue.size(), queue.remainingCapacity()}, "/");
+                        logger.info(infoFormat, infoValues);
                     }
-                    List<String> keyValues = new ArrayList<>();
-                    for(String key: keyColumns) {
-                        keyValues.add(StringUtils.join(new String[]{key, "=", operation.getRow().getString(key)}));
-                    }
-                    infoValues[1] = StringUtils.join(keyValues.toArray(), ",");
-                    logger.info(infoFormat, infoValues);
                 }
+            }
+            if (isRunning) {
+                logger.info("synchronization thread for table [{}] idle time out.", tableName);
+            } else {
+                logger.info("synchronization thread for table [{}] was stopped.", tableName);
             }
         } catch (InterruptedException e) {
             isRunning = false;
-            logger.error("queue take exception. cause: {}, message: {}", e.getCause(), e.getMessage());
+            logger.info(lastExecuteTime.toString());
+            logger.error("thread InterruptedException exception. cause: {}, message: {}", e.getCause(), e.getMessage());
         } catch (KuduException e) {
             isRunning = false;
             logger.error("kudu operation exception. cause: {}, message: {}", e.getCause(), e.getMessage());
         } finally {
             try {
-                kuduSession.close();
+                if (kuduSession != null) {
+                    kuduSession.close();
+                }
             } catch (KuduException e) {
                 logger.error("failed to close kudu session. cause: {}, message: {}", e.getCause(), e.getMessage());
-            }
-            try {
-                kuduClient.close();
-            } catch (KuduException e1) {
-                logger.error("failed to close kudu client. cause: {}, message: {}", e1.getCause(), e1.getMessage());
             }
         }
     }
 
     public void stop() {
         isRunning = false;
+    }
+
+    public Date getLatestRunTime() {
+        return lastExecuteTime;
     }
 }

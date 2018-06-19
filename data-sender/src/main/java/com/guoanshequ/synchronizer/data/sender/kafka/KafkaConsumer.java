@@ -34,16 +34,18 @@ public class KafkaConsumer {
         CanalBean canalBean = JSON.parseObject(message, new TypeReference<CanalBean>(){});
         logger.debug("{} topic message : {}", canalBean.getDatabase(), message);
 
+        // set impala table name base on configuration
         String kuduTableName = kuduConfig.getTableMappings().get(StringUtils.join(new String[]{canalBean.getDatabase(), ".", canalBean.getTable()}));
 
         if (kuduTableName != null) {
             LinkedBlockingQueue<CanalBean> canalBeanLinkedBlockingQueue = queueConcurrentHashMap.get(kuduTableName);
+            // create message queue for table synchronization thread with initialization size if necessary
             if (canalBeanLinkedBlockingQueue == null) {
                 logger.debug("the queue for [{}] is not exist at consumer listener.", kuduTableName);
                 canalBeanLinkedBlockingQueue = new LinkedBlockingQueue<>(kuduConfig.getQueueSize());
                 queueConcurrentHashMap.put(kuduTableName, canalBeanLinkedBlockingQueue);
             } else {
-                logger.debug("the queue for [{}] has been created.", kuduTableName);
+                logger.debug("the queue for [{}] has already existed.", kuduTableName);
             }
 
             try {

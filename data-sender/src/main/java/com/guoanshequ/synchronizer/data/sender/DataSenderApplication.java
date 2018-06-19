@@ -13,13 +13,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @SpringBootApplication
 public class DataSenderApplication {
@@ -41,48 +37,50 @@ public class DataSenderApplication {
         ConfigurableApplicationContext applicationContext = SpringApplication.run(DataSenderApplication.class, args);
 
         KuduConfig kuduConfig = applicationContext.getBean(KuduConfig.class);
-        ConcurrentHashMap<String, LinkedBlockingQueue<CanalBean>> blockingQueueConcurrentHashMap = createConcurrentHashMap();
 
         ExecutorService executorService = Executors.newCachedThreadPool();
-        List<WorkerThread> workerThreadList = new ArrayList<>();
-        List<KuduClient> kuduClientList = new ArrayList<>();
+        Map<String, WorkerThread> workerMap = new HashMap<>();
+        Map<String, Future<?>> workerFutureMap = new HashMap<>();
+        KuduClient kuduClient = new KuduClient.KuduClientBuilder(kuduConfig.getMaster()).build();
 
+        AtomicReference<Boolean> isMonitoring = new AtomicReference<>(true);
 
-        for (Map.Entry<String, String> entry : kuduConfig.getTableMappings().entrySet()) {
-            String workerThreadName = entry.getValue();
-            LinkedBlockingQueue<CanalBean> blockingQueue;
-            if (blockingQueueConcurrentHashMap.containsKey(workerThreadName)) {
-                logger.debug("the queue involved with impala table {} already exists.", workerThreadName);
-                blockingQueue = blockingQueueConcurrentHashMap.get(workerThreadName);
-            } else {
-                logger.debug("the queue involved with impala table {} is not exists.", workerThreadName);
-                blockingQueue = new LinkedBlockingQueue<>(kuduConfig.getQueueSize());
-                blockingQueueConcurrentHashMap.put(workerThreadName, blockingQueue);
-            }
-            KuduClient client = new KuduClient.KuduClientBuilder(kuduConfig.getMaster()).build();
-            kuduClientList.add(client);
-            WorkerThread workerThread = new WorkerThread(client, workerThreadName, blockingQueue);
-            workerThreadList.add(workerThread);
-            executorService.execute(workerThread);
-        }
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            logger.info("close all opened kudu client.");
-            for (KuduClient kuduClient:kuduClientList){
+        executorService.execute(() -> {
+            while (isMonitoring.get()) {
                 try {
-                    kuduClient.close();
-                } catch (KuduException e) {
-                    logger.error("close Kudu client failed. cause: {}, message: {}.", e.getCause(), e.getMessage());
+                    Thread.sleep(kuduConfig.getScanInterval());
+                    logger.debug("the size of thread pool: {}", ((ThreadPoolExecutor) executorService).getPoolSize());
+                    for (Map.Entry<String, LinkedBlockingQueue<CanalBean>> entry : concurrentHashMap.entrySet()) {
+                        String key = entry.getKey();
+                        LinkedBlockingQueue<CanalBean> queue = entry.getValue();
+                        if ((!workerMap.containsKey(key) && queue.size() > 0) || (workerMap.containsKey(key) && workerFutureMap.get(key).isDone() && queue.size() > 0)) {
+                            WorkerThread workerThread = new WorkerThread(kuduClient, key, queue, kuduConfig.getIdleTimeout(), kuduConfig.getMaxWaitTime());
+                            workerMap.put(key, workerThread);
+                            Future<?> future = executorService.submit(workerThread);
+                            workerFutureMap.put(key, future);
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    logger.error("monitor thread exception. cause: {}, message: {}.", e.getCause(), e.getMessage());
                 }
             }
+        });
 
-            logger.info("clean the thread pool.");
-            for (WorkerThread thread : workerThreadList) {
-                thread.stop();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("stop monitor thread.");
+            isMonitoring.set(false);
+            logger.info("stop worker thread.");
+            for (Map.Entry<String, WorkerThread> entry : workerMap.entrySet()) {
+                entry.getValue().stop();
+            }
+            logger.info("close kudu client.");
+            try {
+                kuduClient.close();
+            } catch (KuduException e) {
+                logger.error("close Kudu client failed. cause: {}, message: {}.", e.getCause(), e.getMessage());
             }
             logger.info("shutdown thread pool.");
             executorService.shutdown();
         }));
-
     }
 }
