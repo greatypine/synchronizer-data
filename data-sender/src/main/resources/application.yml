@@ -49,6 +49,19 @@ app:
       gemini.t_order_item: gemini.t_order_item
       gemini.t_customer: gemini.t_customer
       gemini.t_employee: gemini.t_employee
+      gemini.t_store: gemini.t_store
+      gemini.t_eshop : gemini.t_eshop
+      gemini.t_sys_area: gemini.t_sys_area
+      gemini.t_company: gemini.t_company
+      gemini.t_ed_sys_role: gemini.t_ed_sys_role
+      gemini.t_order_group: gemini.t_order_group
+      gemini.t_department_channel: gemini.t_department_channel
+      gemini.t_channel_card_activation_record: gemini.t_channel_card_activation_record
+      gemini.t_wx_gift_card_buy_record: gemini.t_wx_gift_card_buy_record
+      gemini.t_order_receipts: gemini.t_order_receipts
+      gemini.t_order_address: gemini.t_order_address
+      gemini.t_contract: gemini.t_contract
+      gemini.t_order_item_extra: gemini.t_order_item_extra
     queue-size: 10
     idle-timeout: 300
     max-wait-time: 60000
@@ -77,6 +90,19 @@ app:
       gemini.t_order_item: gemini.t_order_item
       gemini.t_customer: gemini.t_customer
       gemini.t_employee: gemini.t_employee
+      gemini.t_store: gemini.t_store
+      gemini.t_eshop : gemini.t_eshop
+      gemini.t_sys_area: gemini.t_sys_area
+      gemini.t_company: gemini.t_company
+      gemini.t_ed_sys_role: gemini.t_ed_sys_role
+      gemini.t_order_group: gemini.t_order_group
+      gemini.t_department_channel: gemini.t_department_channel
+      gemini.t_channel_card_activation_record: gemini.t_channel_card_activation_record
+      gemini.t_wx_gift_card_buy_record: gemini.t_wx_gift_card_buy_record
+      gemini.t_order_receipts: gemini.t_order_receipts
+      gemini.t_order_address: gemini.t_order_address
+      gemini.t_contract: gemini.t_contract
+      gemini.t_order_item_extra: gemini.t_order_item_extra
     queue-size: 50
     idle-timeout: 300
     max-wait-time: 60000
