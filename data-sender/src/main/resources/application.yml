@@ -62,6 +62,7 @@ app:
       gemini.t_order_address: gemini.t_order_address
       gemini.t_contract: gemini.t_contract
       gemini.t_order_item_extra: gemini.t_order_item_extra
+      gemini.t_product: gemini.t_product
     queue-size: 10
     idle-timeout: 300
     max-wait-time: 60000
