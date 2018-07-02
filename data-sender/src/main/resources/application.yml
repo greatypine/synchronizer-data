@@ -84,6 +84,7 @@ app:
   kafka:
     topics:
       - gemini
+      - daqWeb
   kudu:
     master: 10.30.0.13
     table-mappings:
@@ -104,6 +105,8 @@ app:
       gemini.t_order_address: gemini.t_order_address
       gemini.t_contract: gemini.t_contract
       gemini.t_order_item_extra: gemini.t_order_item_extra
+      gemini.t_product: gemini.t_product
+      daqWeb.df_mass_order_total: daqWeb.df_mass_order_total
     queue-size: 50
     idle-timeout: 300
     max-wait-time: 60000
