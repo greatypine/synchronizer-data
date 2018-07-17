@@ -115,6 +115,9 @@ public class WorkerThread implements Runnable {
         } catch (KuduException e) {
             isRunning = false;
             logger.error("kudu operation exception. cause: {}, message: {}", e.getCause(), e.getMessage());
+        } catch (Exception e) {
+            isRunning = false;
+            logger.error("exception. cause: {}, message: {}", e.getCause(), e.getMessage());
         } finally {
             try {
                 if (kuduSession != null) {

@@ -21,6 +21,7 @@ app:
       test.t2: test.t2
       test.t3: test.t3
       test.t4: test.t4
+      daqWeb.t1: daqWeb.t1
     queue-size: 10
     idle-timeout: 300
     max-wait-time: 60000
@@ -46,6 +47,7 @@ app:
   kudu:
     master: 10.16.31.227
     table-mappings:
+      daqWeb.t1: daqWeb.t1
       gemini.t_order: gemini.t_order
       gemini.t_order_item: gemini.t_order_item
       gemini.t_customer: gemini.t_customer

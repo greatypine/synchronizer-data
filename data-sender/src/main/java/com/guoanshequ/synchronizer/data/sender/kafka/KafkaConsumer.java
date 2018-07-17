@@ -45,7 +45,7 @@ public class KafkaConsumer {
                 canalBeanLinkedBlockingQueue = new LinkedBlockingQueue<>(kuduConfig.getQueueSize());
                 queueConcurrentHashMap.put(kuduTableName, canalBeanLinkedBlockingQueue);
             } else {
-                logger.debug("the queue for [{}] has already existed.", kuduTableName);
+                logger.debug("the queue for [{}] has already exist.", kuduTableName);
             }
 
             try {
