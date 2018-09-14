@@ -79,7 +79,7 @@ logging:
 spring:
   kafka:
     consumer:
-      bootstrap-servers: 10.30.0.12:9092,10.30.0.13:9092,10.30.0.14:9092
+      bootstrap-servers: 10.10.40.7:9092,10.10.40.8:9092,10.10.40.9:9092
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: defaultGroup
@@ -92,26 +92,63 @@ app:
   kudu:
     master: 10.30.0.13
     table-mappings:
-      gemini.t_order: gemini.t_order
-      gemini.t_order_item: gemini.t_order_item
-      gemini.t_customer: gemini.t_customer
-      gemini.t_employee: gemini.t_employee
-      gemini.t_store: gemini.t_store
-      gemini.t_eshop : gemini.t_eshop
-      gemini.t_sys_area: gemini.t_sys_area
-      gemini.t_company: gemini.t_company
-      gemini.t_ed_sys_role: gemini.t_ed_sys_role
-      gemini.t_order_group: gemini.t_order_group
       gemini.t_department_channel: gemini.t_department_channel
-      gemini.t_channel_card_activation_record: gemini.t_channel_card_activation_record
-      gemini.t_wx_gift_card_buy_record: gemini.t_wx_gift_card_buy_record
-      gemini.t_order_receipts: gemini.t_order_receipts
-      gemini.t_order_address: gemini.t_order_address
-      gemini.t_contract: gemini.t_contract
+      gemini.t_product_category: gemini.t_product_category
+      gemini.t_sku_rule_product_ref: gemini.t_sku_rule_product_ref
+      gemini.t_mebmer_info: gemini.t_mebmer_info
+      gemini.t_sys_role: gemini.t_sys_role
+      gemini.t_employee_role: gemini.t_employee_role
+      gemini.t_member_operation_record: gemini.t_member_operation_record
+      gemini.t_company: gemini.t_company
       gemini.t_order_item_extra: gemini.t_order_item_extra
+      gemini.t_sys_area: gemini.t_sys_area
+      gemini.t_store: gemini.t_store
+      gemini.t_business_model: gemini.t_business_model
+      gemini.t_card_coupon: gemini.t_card_coupon
+      gemini.t_card_coupontype: gemini.t_card_coupontype
+      gemini.t_contract: gemini.t_contract
+      gemini.t_customer: gemini.t_customer
+      gemini.t_customer_address: gemini.t_customer_address
+      gemini.t_ed_sys_role: gemini.t_ed_sys_role
+      gemini.t_employee: gemini.t_employee
+      gemini.t_eshop: gemini.t_eshop
+      gemini.t_eshop_category: gemini.t_eshop_category
+      gemini.t_groupon_def: gemini.t_groupon_def
+      gemini.t_groupon_instance: gemini.t_groupon_instance
+      gemini.t_inventory: gemini.t_inventory
+      gemini.t_inventory_in: gemini.t_inventory_in
+      gemini.t_inventory_in_detail: gemini.t_inventory_in_detail
+      gemini.t_inventory_loss: gemini.t_inventory_loss
+      gemini.t_inventory_out: gemini.t_inventory_out
+      gemini.t_inventory_out_detail: gemini.t_inventory_out_detail
+      gemini.t_inventory_transfer: gemini.t_inventory_transfer
+      gemini.t_inventory_transfer_detail: gemini.t_inventory_transfer_detail
+      gemini.t_order_address: gemini.t_order_address
+      gemini.t_order_attachments: gemini.t_order_attachments
+      gemini.t_order_comment: gemini.t_order_comment
+      gemini.t_order_refund: gemini.t_order_refund
+      gemini.t_order_returned: gemini.t_order_returned
       gemini.t_product: gemini.t_product
-      daqWeb.df_mass_order_total: daqWeb.df_mass_order_total
-    queue-size: 50
+      gemini.t_product_combo: gemini.t_product_combo
+      gemini.t_provider: gemini.t_provider
+      gemini.t_reward: gemini.t_reward
+      gemini.t_seller: gemini.t_seller
+      gemini.t_service_scope: gemini.t_service_scope
+      gemini.t_settlement: gemini.t_settlement
+      gemini.t_settlement_item: gemini.t_settlement_item
+      gemini.t_shopping_cart: gemini.t_shopping_cart
+      gemini.t_sku_price_rule: gemini.t_sku_price_rule
+      gemini.t_stockcheck: gemini.t_stockcheck
+      gemini.t_stockcheck_detail: gemini.t_stockcheck_detail
+      gemini.t_sys_area: gemini.t_sys_area
+      gemini.t_sys_dictionary: gemini.t_sys_dictionary
+      gemini.t_sys_dictionarytype: gemini.t_sys_dictionarytype
+      gemini.t_warehouse: gemini.t_warehouse
+      gemini.t_order_group: gemini.t_order_group
+      gemini.t_order_item: gemini.t_order_item
+      gemini.t_order_receipts: gemini.t_order_receipts
+      gemini.t_order: gemini.t_order
+    queue-size: 200
     idle-timeout: 300
     max-wait-time: 60000
     scan-interval: 1000
