@@ -89,14 +89,13 @@ app:
     topics:
       - gemini
   kudu:
-    master: 10.30.0.13
+    master: 10.10.40.7,10.10.40.8,10.10.40.9
     table-mappings:
       gemini.t_groupon_instance: gemini.t_groupon_instance
       gemini.t_order: gemini.t_order
       gemini.t_customer: gemini.t_customer
       gemini.t_company: gemini.t_company
       gemini.t_provider: gemini.t_provider
-      gemini.t_employee_role: gemini.t_employee_role
       gemini.t_member_operation_record: gemini.t_member_operation_record
       gemini.t_sys_dictionary: gemini.t_sys_dictionary
       gemini.t_settlement: gemini.t_settlement
@@ -125,7 +124,6 @@ app:
       gemini.t_product_combo: gemini.t_product_combo
       gemini.t_inventory_in: gemini.t_inventory_in
       gemini.t_service_scope: gemini.t_service_scope
-      gemini.t_sku_rule_product_ref: gemini.t_sku_rule_product_ref
       gemini.t_business_model: gemini.t_business_model
       gemini.t_employee: gemini.t_employee
       gemini.t_inventory_loss: gemini.t_inventory_loss
