@@ -54,15 +54,15 @@ canal:
   destination: instance-a01
   server:
     zkServers: 10.16.31.218:2181,10.16.31.218:2182,10.16.31.218:2183
-    hosts: 10.30.0.14:11111
+    hosts: 10.10.10.37:11111
     username: canal
     password: canal
   client:
-    queueInitSize: 50
+    queueInitSize: 200
 spring:
   kafka:
     producer:
-      bootstrap-servers: 10.30.0.12:9092,10.30.0.13:9092,10.30.0.14:9092
+      bootstrap-servers: 10.10.40.7:9092,10.10.40.8:9092,10.10.40.9:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       batch-size: 4096

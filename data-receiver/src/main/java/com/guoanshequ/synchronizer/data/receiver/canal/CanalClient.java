@@ -123,7 +123,7 @@ public class CanalClient implements Runnable {
 
                     CanalBean canalBean = new CanalBean(entry.getHeader().getSchemaName(), entry.getHeader().getTableName(),
                             entry.getHeader().getExecuteTime(), eventType.getNumber(), rowChange.getSql());
-                    logger.info("put ddl operation into queue.");
+                    logger.info("put ddl operation into queue. {}/{}", queue.size(), queue.getCapacity());
                     queue.put(canalBean);
                 } else {
                     for (CanalEntry.RowData rowData : rowChange.getRowDatasList()) {
@@ -139,7 +139,7 @@ public class CanalClient implements Runnable {
                         Map<String, CanalBean.RowData.ColumnEntry> afterColumns = createColumnMap(rowData.getAfterColumnsOrBuilderList());
 
                         canalBean.setRowData(new CanalBean.RowData(beforeColumns, afterColumns));
-                        logger.info("put dml operation into queue.");
+                        logger.info("put dml operation into queue. {}/{}", queue.size(), queue.getCapacity());
                         queue.put(canalBean);
                     }
                 }
