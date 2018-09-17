@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: pross
+    active: pro
 ---
 canal:
   destination: instance-dev
