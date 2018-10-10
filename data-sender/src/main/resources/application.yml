@@ -88,9 +88,11 @@ app:
   kafka:
     topics:
       - gemini
+      - daqWeb
   kudu:
     master: 10.10.40.7,10.10.40.8,10.10.40.9
     table-mappings:
+      daqWeb.df_mass_order_total: daqWeb.df_mass_order_total
       gemini.t_groupon_instance: gemini.t_groupon_instance
       gemini.t_order: gemini.t_order
       gemini.t_customer: gemini.t_customer
