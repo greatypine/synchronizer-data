@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import static com.alibaba.otter.canal.protocol.CanalEntry.EventType.DELETE;
 import static com.alibaba.otter.canal.protocol.CanalEntry.EventType.INSERT;
 import static com.alibaba.otter.canal.protocol.CanalEntry.EventType.UPDATE;
 
@@ -42,7 +41,7 @@ public class KafkaProducer implements Runnable {
     @Override
     public void run() {
 
-        String infoFormat = "SEND MSG: {}, DB: {}, TABLE: {}, KEY: [{}], OPE: {}";
+        String infoFormat = "MSG: {}, DB: {}, TABLE: {}, KEY: [{}], OP: {}";
         Object[] infoValues;
 
         try {
@@ -51,16 +50,16 @@ public class KafkaProducer implements Runnable {
                 infoValues = new String[5];
                 String canalBeanJsonStr = JSON.toJSONString(canalBean);
                 logger.debug("message context: {}", canalBeanJsonStr);
-                ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(canalBean.getDatabase(), canalBeanJsonStr);
+                ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(canalBean.getDatabase(), canalBean.getTable(), canalBeanJsonStr);
                 SendResult<String, String> sendResult = future.get();
                 infoValues[0] = sendResult.getRecordMetadata().toString();
                 infoValues[1] = canalBean.getDatabase();
                 infoValues[2] = canalBean.getTable();
                 infoValues[4] = CanalEntry.EventType.valueOf(canalBean.getEventType()).name();
-                Map<String, CanalBean.RowData.ColumnEntry> columnEntryMap = null;
+                Map<String, CanalBean.RowData.ColumnEntry> columnEntryMap;
                 if(canalBean.getEventType() == INSERT.getNumber() || canalBean.getEventType() == UPDATE.getNumber()) {
                     columnEntryMap = canalBean.getRowData().getAfterColumns();
-                } else if(canalBean.getEventType() == DELETE.getNumber()) {
+                } else {
                     columnEntryMap = canalBean.getRowData().getBeforeColumns();
                 }
                 List<String> keyValues = new ArrayList<>();

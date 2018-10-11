@@ -72,7 +72,7 @@ public class CanalClient implements Runnable {
                 long batchId = message.getId();
                 int size = message.getEntries().size();
                 if (batchId != -1 && size != 0) {
-                    logger.info("the data size of taken is {}. ", size);
+                    logger.debug("the data size of taken is {}. ", size);
                     putEntriesToQueue(message.getEntries());
                 }
                 connector.ack(batchId);
@@ -139,7 +139,7 @@ public class CanalClient implements Runnable {
                         Map<String, CanalBean.RowData.ColumnEntry> afterColumns = createColumnMap(rowData.getAfterColumnsOrBuilderList());
 
                         canalBean.setRowData(new CanalBean.RowData(beforeColumns, afterColumns));
-                        logger.info("put dml operation into queue. {}/{}", queue.size(), queue.getCapacity());
+                        logger.debug("put dml operation into queue. {}/{}", queue.size(), queue.getCapacity());
                         queue.put(canalBean);
                     }
                 }
