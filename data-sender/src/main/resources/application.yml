@@ -1,11 +1,11 @@
 spring:
   profiles:
-    active: pro
+    active: dev
 ---
 spring:
   kafka:
     consumer:
-      bootstrap-servers: 10.16.31.179:9092,10.16.31.180:9092,10.16.31.227:9092
+      bootstrap-servers: 10.16.31.23:9092,10.16.31.23:9093,10.16.31.23:9094
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: defaultGroup

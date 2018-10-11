@@ -60,7 +60,7 @@ public class WorkerThread implements Runnable {
         try {
 
             String impalaTable = StringUtils.join(new String[]{"impala::", tableName});
-            String infoFormat = StringUtils.join(new String[]{impalaTable, " {} keys:[{}]", " queue size:{}"});
+            String infoFormat = StringUtils.join(new String[]{impalaTable, " {} keys:[{}]", " RESULT:{},", " queue size:{}"});
 
             KuduTable kuduTable = kuduClient.openTable(impalaTable);
             List<ColumnSchema> columnSchemas = kuduTable.getSchema().getColumns();
@@ -84,8 +84,8 @@ public class WorkerThread implements Runnable {
                     n = 0;
                     Operation operation = KuduTableOperation.createOperation(kuduTable, canalBean);
                     if (operation != null) {
-                        kuduSession.apply(operation);
-                        Object[] infoValues = new String[3];
+                        OperationResponse operationResponse = kuduSession.apply(operation);
+                        Object[] infoValues = new String[4];
                         if (operation instanceof Insert) {
                             infoValues[0] = "INSERT";
                         } else if (operation instanceof Delete) {
@@ -98,7 +98,12 @@ public class WorkerThread implements Runnable {
                             keyValues.add(StringUtils.join(new String[]{key, "=", operation.getRow().getString(key)}));
                         }
                         infoValues[1] = StringUtils.join(keyValues.toArray(), ",");
-                        infoValues[2] = StringUtils.join(new Object[]{queue.size(), queue.remainingCapacity()}, "/");
+                        if(operationResponse.hasRowError()) {
+                            infoValues[2] = operationResponse.getRowError().getErrorStatus().toString();
+                        } else {
+                            infoValues[2] = "operation success";
+                        }
+                        infoValues[3] = StringUtils.join(new Object[]{queue.size(), queue.remainingCapacity()}, "/");
                         logger.info(infoFormat, infoValues);
                     }
                 }
@@ -117,6 +122,7 @@ public class WorkerThread implements Runnable {
             logger.error("kudu operation exception. cause: {}, message: {}", e.getCause(), e.getMessage());
         } catch (Exception e) {
             isRunning = false;
+            e.printStackTrace();
             logger.error("exception. cause: {}, message: {}", e.getCause(), e.getMessage());
         } finally {
             try {

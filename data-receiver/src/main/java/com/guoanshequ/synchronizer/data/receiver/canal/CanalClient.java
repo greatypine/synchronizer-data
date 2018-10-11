@@ -99,7 +99,7 @@ public class CanalClient implements Runnable {
                         throw new RuntimeException("parse event has an error , data:" + entry.toString(), e);
                     }
                     // 打印事务头信息，执行的线程id
-                    logger.info("BEGIN ----> Thread id: {}", begin.getThreadId());
+                    logger.debug("BEGIN ----> Thread id: {}", begin.getThreadId());
                 } else {
                     CanalEntry.TransactionEnd end;
                     try {
@@ -108,7 +108,7 @@ public class CanalClient implements Runnable {
                         throw new RuntimeException("parse event has an error , data:" + entry.toString(), e);
                     }
                     // 打印事务提交信息，事务id
-                    logger.info("END ----> transaction id: {}", end.getTransactionId());
+                    logger.debug("END ----> transaction id: {}", end.getTransactionId());
                 }
             } else if (entry.getEntryType() == CanalEntry.EntryType.ROWDATA) {
                 CanalEntry.RowChange rowChange;
