@@ -77,6 +77,9 @@ public class KafkaProducer implements Runnable {
         } catch (ExecutionException e) {
             logger.error("message send failure. cause: {}, message: {}", e.getCause(), e.getMessage());
             isRunning = false;
+        } catch (Exception e) {
+            logger.error("exception!. cause: {}, message: {}", e.getCause(), e.getMessage());
+            isRunning = false;
         }
     }
 

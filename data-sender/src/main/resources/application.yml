@@ -147,6 +147,9 @@ app:
       gemini.t_mebmer_info: gemini.t_mebmer_info
       gemini.t_shopping_cart: gemini.t_shopping_cart
       gemini.t_sku_price_rule: gemini.t_sku_price_rule
+      gemini.t_channel_card_activation_record: gemini.t_channel_card_activation_record
+      gemini.t_wx_gift_card_buy_record: gemini.t_wx_gift_card_buy_record
+      gemini.t_order_flow: gemini.t_order_flow
     queue-size: 200
     idle-timeout: 300
     max-wait-time: 60000

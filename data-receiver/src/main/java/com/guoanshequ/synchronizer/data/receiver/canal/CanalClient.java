@@ -121,10 +121,11 @@ public class CanalClient implements Runnable {
                 if (rowChange.getIsDdl()) {
                     logger.info("ddlSql ----> " + rowChange.getSql());
 
-                    CanalBean canalBean = new CanalBean(entry.getHeader().getSchemaName(), entry.getHeader().getTableName(),
-                            entry.getHeader().getExecuteTime(), eventType.getNumber(), rowChange.getSql());
-                    logger.info("put ddl operation into queue. {}/{}", queue.size(), queue.getCapacity());
-                    queue.put(canalBean);
+//                    CanalBean canalBean = new CanalBean(entry.getHeader().getSchemaName(), entry.getHeader().getTableName(),
+//                            entry.getHeader().getExecuteTime(), eventType.getNumber(), rowChange.getSql());
+//                    logger.info("put ddl operation into queue. {}/{}", queue.size(), queue.getCapacity());
+//                    queue.put(canalBean);
+                    logger.info("omit ddl operation. {}/{}", queue.size(), queue.getCapacity());
                 } else {
                     for (CanalEntry.RowData rowData : rowChange.getRowDatasList()) {
                         CanalBean canalBean = new CanalBean(entry.getHeader().getSchemaName(), entry.getHeader().getTableName(),
